@@ -8,7 +8,7 @@ import os
 flag = False
 count12 = 0
 
-#path1 = "/Users/rosarioriccio/Desktop/dataTemp/d01"
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
