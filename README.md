@@ -14,16 +14,17 @@ These data are provided thanks to ajax calls in the meteo-uniparthenope library:
 
 - It is necessary to install mongodb and create a collection for users with unique username:
 you type this command "db.UserCollection.createIndex( { "username": 1 }, { unique: true } )"
--You must insert web app user on mongodb shell:
+- You must insert web app user on mongodb shell:
 you type this command "db.UserCollection.insert({"username":"YOUR_USERNAME","password":"YOUR_PASSWORD"})
 
 2 - Requirements:
 
-A) Client Side
+A) Client Side:
+
 meteo-uniparthenope.js
-JQuery
-Bootstrap
-Leaflet
+jQuery
+bootstrap
+leaflet
 leaflet.pm
 query-ui
 leaflet-velocity
@@ -34,7 +35,9 @@ Control.Loading
 leaflet-easybutton
 
 B) Server side:
-Python 2.7
-Python Module:
+
+mongodb
+python 2.7
+python Module:
 Flask
 pyMongo
