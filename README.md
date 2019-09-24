@@ -21,23 +21,23 @@ you type this command "db.UserCollection.insert({"username":"YOUR_USERNAME","pas
 
 A) Client Side:
 
-meteo-uniparthenope.js
-jQuery
-bootstrap
-leaflet
-leaflet.pm
-query-ui
-leaflet-velocity
-geojson-tiles
-leaflet.groupedlayercontrol
-spin
-Control.Loading
-leaflet-easybutton
+meteo-uniparthenope.js,
+jQuery,
+bootstrap,
+leaflet,
+leaflet.pm,
+query-ui,
+leaflet-velocity,
+geojson-tiles,
+leaflet.groupedlayercontrol,
+spin,
+Control.Loading,
+leaflet-easybutton.
 
 B) Server side:
 
-mongodb
-python 2.7
-python Module:
-Flask
+mongodb,
+python 2.7.
+Python Module:
+flask
 pyMongo
