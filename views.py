@@ -214,8 +214,8 @@ def modifyLabel():
     if request.is_xhr and request.method=="POST":
         idDB = request.form["id"]
         name = request.form["name"]
-        #print("modifica label del Polygon con idDB",idDB)
-        #print("nuova etichetta",name)
+        #print("modify label of Polygon with idDB",idDB)
+        #print("new label: ",name)
         try:
             managedb.modifyLabelPolygonOnIdDB(idDB,name)
             return json.dumps({"result": "correct"})
@@ -229,7 +229,7 @@ def listPointClusterOnDate():
     if request.is_xhr and request.method=="POST":
         dateold = request.form['dateStr']
         datenew = datetime.datetime(int(dateold[0:4]), int(dateold[4:6]), int(dateold[6:8]), int(dateold[9:11]))
-        #print("Individuare i Point Cluster con datetime", str(datenew))
+        #print("Check clusters' points of a specific date:", str(datenew))
         try:
             result, cursorListPointCluster = managedb.listPointClusterOnDateDB(datenew)
             if (result == False):
