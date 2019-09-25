@@ -1,8 +1,8 @@
 <!--This file represents the main page, in which is possible to manage and create polygons that track specific weather events:
-1) create polygon
-2) remove polygon
-3) assign a label to polygon
-4) create a label
+1) to create polygon
+2) to remove polygon
+3) to assign a label to polygon
+4) to create a label
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -387,7 +387,7 @@ function onEachFeature(f, l) {
                     div1.appendChild(y);
                     div1.appendChild(btn);
                     l.bindPopup(div1).on('popupopen', function (popup) {
-                        //This event add a popup to layer
+                        //This event adds a popup to layer
                         let a = div1.childNodes;
                         for(let i = 0 ; i < a.length; i++){
                             if(a[i].nodeName == "SELECT"){
@@ -526,7 +526,7 @@ function updateMap(localPlace,localDate){
             }
         }
     });
-    //This ajax call asks the database the list of clusters' points
+    //This ajax call asks the database for the list of clusters' points
     $.ajax({
         url: "{{url_for("listPointClusterOnDate")}}",
         method:"POST",
@@ -685,7 +685,7 @@ function updateMap(localPlace,localDate){
                                 }
                             });
                             var data1 = data;
-                            //this call ajax asks the db the storms'list of a specific date
+                            //this call ajax asks the db for the storms'list of a specific date
                             $.ajax({
                                 url: "{{url_for("listStormOnDate")}}",
                                 method:"POST",
