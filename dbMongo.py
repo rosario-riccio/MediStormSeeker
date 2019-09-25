@@ -102,7 +102,7 @@ class ManageDB(object):
         return count
 
     def insertLabelDB(self, label):
-        """This method insert a new label"""
+        """This method inserts a new label"""
         id = self.db.LabelCollection.insert(label)
         return id
 
