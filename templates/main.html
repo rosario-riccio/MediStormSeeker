@@ -680,7 +680,7 @@ function updateMap(localPlace,localDate){
                             //the identified layer will be removed from map, then it will be added using geojson
                             map.map.eachLayer(function (layer) {
                                 if(layer._leaflet_id == leafletID){
-                                    //console.log("layer individuato " + leafletID );
+                                    //console.log("leafletID identified" + leafletID );
                                     map.map.removeLayer(layer);
                                 }
                             });
@@ -750,7 +750,7 @@ function updateMap(localPlace,localDate){
                                         groupPolygon.push(a);
                                         for(let key in groupPolygon){
                                             if(groupPolygon[key]["name"] == name){
-                                                    //console.log("creazione nuovo gruppo " + name);
+                                                    //console.log("creation new group " + name);
                                                     groupPolygon[key]["group"].addLayer(polygonJSON);
                                                     groupPolygon[key]["group"].addTo(map.map);
                                                     let a = groupPolygon[key]["name"];
