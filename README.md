@@ -14,30 +14,5 @@ These data are provided thanks to ajax calls in the meteo-uniparthenope library:
 
 - It is necessary to install mongodb and create a collection for users with unique username:
 you type this command "db.UserCollection.createIndex( { "username": 1 }, { unique: true } )"
-- You must insert web app user on mongodb shell:
-you type this command "db.UserCollection.insert({"username":"YOUR_USERNAME","password":"YOUR_PASSWORD"})"
-
-2 - Requirements:
-
-A) Client Side:
-
-meteo-uniparthenope.js,
-jQuery,
-bootstrap,
-leaflet,
-leaflet.pm,
-query-ui,
-leaflet-velocity,
-geojson-tiles,
-leaflet.groupedlayercontrol,
-spin,
-Control.Loading,
-leaflet-easybutton.
-
-B) Server side:
-
-mongodb,
-python 2.7.
-Python Module:
-flask
-pyMongo
+- It's necessary to insert the first admin by mongo's shell:
+for example you could type this command --> db.UserCollection.insert({"name":"YOUR_NAME","surname":"YOUR_SURNAME","username":"YOUR_USERNAME","password":"YOUR_PASSWORD","role":"ADMIN"})
