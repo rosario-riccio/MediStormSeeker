@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{{url_for('static',filename='css/webapi.min.css')}}"/>
     <link rel="stylesheet" href="{{url_for('static',filename='css/leaflet.pm.css')}}"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script src="{{url_for('static',filename='js/js.cookie.js')}}"></script>
     <script src="{{url_for('static',filename='js/jquery-1.12.4.js')}}"></script>
@@ -86,12 +87,17 @@
             width: 100% !important;
             height: 100% !important;
         }
-
+        button.delete_on-active{
+            box-shadow: inset 0 -1px 5px 2px rgba(81, 77, 77, 0.31);
+        }
     </style>
 </head>
 <body>
 <ul>
     <li>Welcome {{session['username']}}</li>
+    {% if session.role == "ADMIN" %}
+        <li><a href="/admin">Home</a></li>
+    {% endif %}
     <li><a href="{{url_for('logout')}}">Logout</a></li>
 </ul>
 <div id="title"></div>
@@ -118,17 +124,85 @@ var myDate = null;
 var allFeature = [];
 var count = 0;
 var countLabel = 0;
+var removeActive = false;
 
 function onEachFeature(f, l) {
         //This function adds the popup to each layer
+        console.log(f);
+        console.log(l);
+        let role = "{{session.role}}";
+        let usernameSession ="{{session.username}}";
+        let usernameGeoJSON = f.properties.username;
+        if(role == "USER"){
+            //console.log(role+ "  "+ usernameSession);
+            l.on('click',function(){
+                if(removeActive==true){
+                    if(usernameSession == usernameGeoJSON){
+                        map.map.removeLayer(l);
+                        let username = f.properties.username;
+                        //console.log(username);
+                        let idDB = f.properties.idDB;
+                        let leafletID = l._leaflet_id;
+                        console.log("leafletID: " +leafletID);
+                        //this ajax call asks the db to remove a specific polygon
+                        $.ajax({
+                            url: "{{url_for("deleteStorm")}}",
+                            method: "POST",
+                            data: {"id": idDB},
+                            dataType: "json",
+                            success: function (data) {
+                                //console.log("leafletid removed "+leafletID);
+                                countPolygon--;
+                                //console.log("countPolygon: "+ countPolygon);
+                                for (let key in groupPolygon) {
+                                    groupPolygon[key].group.eachLayer(function (layer) {
+                                        let layerJSON = layer.toGeoJSON();
+                                        let idDB2;
+                                        try {
+                                            idDB2 = layerJSON["features"][0]["properties"]["idDB"];
+                                            //console.log(idDB2);
+                                        } catch (err) {
+                                            //console.log(err);
+                                            idDB2 = layerJSON["properties"]["idDB"];
+                                            //console.log(idDB2);
+                                        }
+                                        //console.log(idDB + " " + idDB2);
+                                        if (idDB == idDB2) {
+                                            //console.log("count before" + groupPolygon[key].count);
+                                            if (groupPolygon[key].count == 1) {
 
+                                                groupPolygon[key].group.removeLayer(layer);
+                                                groupPolygon[key].count = groupPolygon[key].count - 1;
+                                                //console.log("count after " + groupPolygon[key].count);
+                                                layerControl1.removeLayer(groupPolygon[key].group);
+                                                if (countPolygon <= 0) {
+                                                    layerControl1.remove(map.map);
+                                                }
+                                            } else if (groupPolygon[key].count > 1) {
+                                                groupPolygon[key].group.removeLayer(layer);
+                                                groupPolygon[key].count = groupPolygon[key].count - 1;
+                                                //console.log("count after " + groupPolygon[key].count);
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+
+                    }else{
+                        alert("you are not authorized to cancel the pologons of others");
+                    }
+                }
+            });
+        }
         $.ajax({
             url: "{{url_for("listLabelsOnIdDB")}}",
             method:"POST",
             data:{"id":f.properties.idDB},
             dataType:"json",
             success:function(data) {
-                if (data.result != "error"){
+                if (data.result != "error") {
                     //console.log(data);
                     let select0 = document.createElement('select');
                     count = count + 1;
@@ -144,7 +218,9 @@ function onEachFeature(f, l) {
                         data[i].labelName = data[i].labelName.toUpperCase();
                     }
                     for (let i = 0; i < data.length; i++) {
-                        if(data[i].labelName == ""){continue;}
+                        if (data[i].labelName == "") {
+                            continue;
+                        }
                         let option1 = document.createElement('option');
                         option1.value = data[i].labelName.toUpperCase();
                         option1.selected = false;
@@ -341,36 +417,36 @@ function onEachFeature(f, l) {
                         label = label.toUpperCase();
                         label = label.trim();
                         //console.log(label);
-                        for(let i = 0 ; i < data111.length;i++){
-                            if(label == data111[i].labelName.toUpperCase()){
+                        for (let i = 0; i < data111.length; i++) {
+                            if (label == data111[i].labelName.toUpperCase()) {
                                 flag12 = true;
                             }
                         }
-                        for(let i = 0; i < label1.length; i++){
+                        for (let i = 0; i < label1.length; i++) {
                             //console.log("item in frontend: "+ data111[i].labelName);
-                            if(label == label1[i].toUpperCase()){
+                            if (label == label1[i].toUpperCase()) {
                                 flag12 = true;
                                 console.log("Element already exists");
                             }
                         }
-                        if(!flag12){
-                            //console.log("item to insert");
+                        if (!flag12) {
+                            //console.log("Elemento da inserire!");
                             $.ajax({
                                 url: "{{url_for("insertLabelsOnIdDB")}}",
-                                method:"POST",
-                                data:{"label":label},
-                                dataType:"json",
-                                async:false,
-                                success:function(data) {
+                                method: "POST",
+                                data: {"label": label},
+                                dataType: "json",
+                                async: false,
+                                success: function (data) {
                                     let node = btn.parentNode.firstChild;
-                                    while(node){
-                                        if(node.nodeName == "SELECT"){
+                                    while (node) {
+                                        if (node.nodeName == "SELECT") {
                                             let id = node.id;
                                             //console.log("id "+ id);
                                             let option = document.createElement('option');
                                             option.value = label;
                                             option.innerHTML = label;
-                                            $("select#"+id).append(option);
+                                            $("select#" + id).append(option);
                                             label1.push(label);
                                         }
                                         node = node.nextSibling;
@@ -379,54 +455,62 @@ function onEachFeature(f, l) {
                             });
                         }
                     });
-
-                    div1.appendChild(pre2);
-                    div1.appendChild(pre1);
-                    div1.appendChild(select0);
-                    div1.appendChild(x);
-                    div1.appendChild(y);
-                    div1.appendChild(btn);
-                    l.bindPopup(div1).on('popupopen', function (popup) {
-                        //This event adds a popup to layer
-                        let a = div1.childNodes;
-                        for(let i = 0 ; i < a.length; i++){
-                            if(a[i].nodeName == "SELECT"){
-                                //console.log(a[i]);
-                                //console.log("id "+ a[i].id);
-                                let id = a[i].id;
-                                for(let i = 0 ; i < label1.length;i++){
-                                    let flag10 = false;
-                                    $("select#"+id + " option").each(function(){
+                    //different interfaces based on the role
+                    if (role == "ADMIN" || usernameSession == usernameGeoJSON) {
+                        div1.appendChild(pre2);
+                        div1.appendChild(pre1);
+                        div1.appendChild(select0);
+                        div1.appendChild(x);
+                        div1.appendChild(y);
+                        div1.appendChild(btn);
+                        l.bindPopup(div1).on('popupopen', function (popup) {
+                            //This event add a popup to layer
+                            let a = div1.childNodes;
+                            for (let i = 0; i < a.length; i++) {
+                                if (a[i].nodeName == "SELECT") {
+                                    //console.log(a[i]);
+                                    //console.log("id "+ a[i].id);
+                                    let id = a[i].id;
+                                    for (let i = 0; i < label1.length; i++) {
+                                        let flag10 = false;
+                                        $("select#" + id + " option").each(function () {
                                             //console.log(this);
                                             let a = $(this).val();
 
-                                            if(label1[i] == a){
+                                            if (label1[i] == a) {
                                                 //console.log("element already exists");
                                                 flag10 = true;
                                             }
-                                    });
-                                    if(!flag10){
-                                        let option = document.createElement('option');
-                                        option.value = label1[i].toUpperCase();
-                                        option.innerHTML = label1[i].toUpperCase();
-                                        $("select#"+id).append(option);
+                                        });
+                                        if (!flag10) {
+                                            let option = document.createElement('option');
+                                            option.value = label1[i].toUpperCase();
+                                            option.innerHTML = label1[i].toUpperCase();
+                                            $("select#" + id).append(option);
+                                        }
                                     }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }else{
+                        div1.appendChild(pre2);
+                        div1.appendChild(pre1);
+                        l.bindPopup(div1);
+                    }
                 }
             }
     });
 }
 
 function updateMap(localPlace,localDate){
+
     groupPolygon = [];
     layerControl1 = L.control.layers();
     map=jQueryProtect("#map").MeteoUniparthenopeMap(localPlace,localDate,{ "noPopup":false, "mapName":_mapName,"baseLink":"https://meteo.uniparthenope.it/product_dashboard/dashboard?"});
     //console.log("DATA 2 "+ map.myDate);
 
-    map.map.pm.addControls({
+    {% if session.role == 'ADMIN' %}
+        map.map.pm.addControls({
             position: 'topleft',
             drawCircle: false,
             drawMarker: false,
@@ -436,8 +520,49 @@ function updateMap(localPlace,localDate){
             dragMode: false,
             cutPolygon: false,
         });
+    {% else %}
+        map.map.pm.addControls({
+            position: 'topleft',
+            drawCircle: false,
+            drawMarker: false,
+            drawPolyline: false,
+            drawRectangle: false,
+            editMode: false,
+            dragMode: false,
+            cutPolygon: false,
+            removalMode: false
+        });
+        var stateChangingButton = L.easyButton({
+                states: [{
+                        stateName: 'delete_off',
+                        icon:      'fa-eraser ',
+                        title:     'delete polygon off',
+                        onClick: function(btn, map1) {
+                            map.map.pm.addControls({
+                              drawPolygon: false
+                            });
+                            console.log(btn.state())
+                            btn.state('delete_on');
+                            removeActive = true;
+                        }
+                    }, {
+                        stateName: 'delete_on',
+                        icon:      'fa-eraser',
+                        title:     'delete polygon on',
+                        onClick: function(btn, map1) {
+                            btn.state('delete_off');
+                            map.map.pm.addControls({
+                              drawPolygon: true
+                            });
+                            removeActive = false;
+                        }
+                }]
+        });
+        stateChangingButton.addTo( map.map );
+    {% endif %}
 
 //In this step I will create each specific group of polygons
+
     $.ajax({
         url:"{{url_for("listClassPolygon")}}",
         method:"POST",
@@ -526,7 +651,7 @@ function updateMap(localPlace,localDate){
             }
         }
     });
-    //This ajax call asks the database for the list of clusters' points
+    //This ajax call asks the database the list of clusters' points
     $.ajax({
         url: "{{url_for("listPointClusterOnDate")}}",
         method:"POST",
@@ -680,12 +805,12 @@ function updateMap(localPlace,localDate){
                             //the identified layer will be removed from map, then it will be added using geojson
                             map.map.eachLayer(function (layer) {
                                 if(layer._leaflet_id == leafletID){
-                                    //console.log("leafletID identified" + leafletID );
+                                    //console.log("layer identified " + leafletID );
                                     map.map.removeLayer(layer);
                                 }
                             });
                             var data1 = data;
-                            //this call ajax asks the db for the storms'list of a specific date
+                            //this call ajax asks the db the storms'list of a specific date
                             $.ajax({
                                 url: "{{url_for("listStormOnDate")}}",
                                 method:"POST",
@@ -750,7 +875,7 @@ function updateMap(localPlace,localDate){
                                         groupPolygon.push(a);
                                         for(let key in groupPolygon){
                                             if(groupPolygon[key]["name"] == name){
-                                                    //console.log("creation new group " + name);
+                                                    //console.log("creation new group" + name);
                                                     groupPolygon[key]["group"].addLayer(polygonJSON);
                                                     groupPolygon[key]["group"].addTo(map.map);
                                                     let a = groupPolygon[key]["name"];
@@ -774,46 +899,47 @@ function updateMap(localPlace,localDate){
 
 //in this step the polygon will be removed
     map.map.on('pm:remove', e => {
-        //console.log(e);
+        let username = e.layer.feature.properties.username;
+        console.log(username);
         let idDB = e.layer.feature.properties.idDB;
-        let leafletID = e.layer._leaflet_id +1;
+        let leafletID = e.layer._leaflet_id + 1;
         //console.log("leafletID: " +leafletID);
         //this ajax call asks the db to remove a specific polygon
         $.ajax({
             url: "{{url_for("deleteStorm")}}",
-            method:"POST",
-            data:{"id":idDB},
-            dataType:"json",
-            success:function(data){
+            method: "POST",
+            data: {"id": idDB},
+            dataType: "json",
+            success: function (data) {
                 //console.log("leafletid removed "+leafletID);
                 countPolygon--;
                 //console.log("countPolygon: "+ countPolygon);
 
-                for(let key in groupPolygon){
-                    groupPolygon[key].group.eachLayer(function(layer){
+                for (let key in groupPolygon) {
+                    groupPolygon[key].group.eachLayer(function (layer) {
                         let layerJSON = layer.toGeoJSON();
                         let idDB2;
-                        try{
+                        try {
                             idDB2 = layerJSON["features"][0]["properties"]["idDB"];
                             //console.log(idDB2);
-                        }catch(err){
+                        } catch (err) {
                             //console.log(err);
                             idDB2 = layerJSON["properties"]["idDB"];
                             //console.log(idDB2);
                         }
                         //console.log(idDB + " " + idDB2);
-                        if(idDB == idDB2){
+                        if (idDB == idDB2) {
                             //console.log("count before" + groupPolygon[key].count);
-                            if(groupPolygon[key].count == 1){
+                            if (groupPolygon[key].count == 1) {
 
                                 groupPolygon[key].group.removeLayer(layer);
                                 groupPolygon[key].count = groupPolygon[key].count - 1;
                                 //console.log("count after " + groupPolygon[key].count);
                                 layerControl1.removeLayer(groupPolygon[key].group);
-                                if(countPolygon <= 0){
+                                if (countPolygon <= 0) {
                                     layerControl1.remove(map.map);
                                 }
-                            }else if(groupPolygon[key].count >1){
+                            } else if (groupPolygon[key].count > 1) {
                                 groupPolygon[key].group.removeLayer(layer);
                                 groupPolygon[key].count = groupPolygon[key].count - 1;
                                 //console.log("count after " + groupPolygon[key].count);
@@ -824,8 +950,6 @@ function updateMap(localPlace,localDate){
             }
         });
     });
-
-
 }
 
 
@@ -854,7 +978,9 @@ function updateMap(localPlace,localDate){
 
 
     jQueryProtect( document ).ready(function() {
-
+        $("path.leaflet-interactive").on("click",function(){
+        alert("ciao!");
+    });
         var weatherValue = 3;
         control=jQueryProtect("#control").MeteoUniparthenopeControl(_place,null,null,dateTime=null);
         map=jQueryProtect("#map").MeteoUniparthenopeMap(_place,_ncepDate,{ "noPopup":false, "mapName":_mapName,"baseLink":"https://meteo.uniparthenope.it/product_dashboard/dashboard?"});
