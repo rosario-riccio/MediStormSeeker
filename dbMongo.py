@@ -1,8 +1,9 @@
 """This file contains the class ManageDB to manage every db operations"""
 
 from pymongo import MongoClient
-from bson.objectid import ObjectId
 import sys
+from bson.objectid import ObjectId
+
 
 class ManageDB(object):
     def __init__(self):
@@ -40,6 +41,11 @@ class ManageDB(object):
         """This method allows to remove polygon"""
         result1 = self.db.PolygonCollection.delete_one({"_id":ObjectId(id)})
         print("Number polygon removed {}".format(result1.deleted_count))
+
+    def deletePolygonDBonUsername(self,username):
+        """This method allows to remove all polygon of username"""
+        result = self.db.PolygonCollection.remove({"properties.username":username})
+        print("Number polygon removed {} di {}".format(result['n'],username))
 
     def listPolygonOnDateDB(self,date1):
         """This method allows to ask the DB for the polygons' list of specific date"""
@@ -102,7 +108,7 @@ class ManageDB(object):
         return count
 
     def insertLabelDB(self, label):
-        """This method inserts a new label"""
+        """This method insert a new label"""
         id = self.db.LabelCollection.insert(label)
         return id
 
@@ -120,16 +126,19 @@ class ManageDB(object):
             return result,cursorListLabel
     #---------------------------LOGIN----------------------------------
 
-    def loginDB(self,username,password):
+    def loginDB(self,username):
         """This method checks userdata"""
-        count = self.db.UserCollection.count({'username':username,'password':password})
+        count = self.db.UserCollection.count({'username':username})
         if(count == 1):
-            user = self.db.UserCollection.find_one({'username':username,'password':password})
+            user = self.db.UserCollection.find_one({'username':username})
             return count,user
         else:
             user = None
             return count,user
 
+    def createUserDB(self,name,surname,username,password):
+        id = self.db.UserCollection.insert_one({'name':name,'surname':surname,'username':username,'password':password})
+        return id
 
 try:
     managedb = ManageDB()
