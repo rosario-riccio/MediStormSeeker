@@ -1,17 +1,18 @@
 """This file allows to manage the web site and web page server-side"""
-from flask import Flask,render_template,request,url_for,session,redirect
+
 from myfunction import *
 import datetime
+from flask_user import roles_required
 import os
 
 #these values allows to insert the default labels
 flag = False
 count12 = 0
 
-
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
-
+app.secret_key = 'Your_secret_string'
+admin = Admin(app,"Admin's Area")
+admin.add_view(UserView(managedb.db.UserCollection,"Manage Users"))
 
 @app.route("/")
 def index():
@@ -29,6 +30,43 @@ def main():
         return render_template('main.html')
     return redirect(url_for('index'))
 
+@app.route("/home")
+def home():
+    """This function allows to execute the login; if user is already logged in , he will able to access the main page"""
+    if "logged_in" in session and session["logged_in"] == True:
+        print("User login",session["username"])
+        return render_template('/admin/index.html')
+    return render_template('index.html')
+
+
+@app.route("/registration")
+def registration():
+    """This function allows to register our account"""
+    if "logged_in" in session and session["logged_in"] == True:
+        return redirect(url_for('main'))
+    return render_template('registration.html')
+
+@app.route('/createUser',methods=["GET","POST"])
+def createUser():
+    """This function adds new user"""
+    if "logged_in" in session and session["logged_in"] == True:
+        return redirect(url_for('main'))
+    if request.method == "POST":
+        print("Create new user")
+        name = request.form["name"]
+        surname = request.form["surname"]
+        username = request.form["username"]
+        password = request.form["password"]
+        pass_hash = generate_password_hash(password, method='pbkdf2:sha256')
+        try:
+            id = managedb.createUserDB(name,surname,username,pass_hash)
+            session["registration"] = True
+            return redirect(url_for("index"))
+        except Exception as e:
+            print("Error DB:",str(e))
+            session["registration"] = False
+            return redirect(url_for("registration"))
+
 @app.route("/logout")
 def logout():
     """This function allows to execute the logout"""
@@ -45,19 +83,25 @@ def login():
         print("Check login DB")
         username = request.form["username"]
         password = request.form["password"]
-        print(username,password)
         try:
-            count,userDB = managedb.loginDB(username,password)
+            count,userDB = managedb.loginDB(username)
+            pass_hash = userDB["password"]
             if(count == 0):
                 session["logged_in"] = False
                 print("login failed")
                 return redirect(url_for('index'))
             else:
-                session["logged_in"] = True
-                session["username"] = userDB["username"]
-                #print("Utente che accede nome:",session["username"])
-                #print("login corretto")
-                return redirect(url_for('main'))
+                if (check_password_hash(pass_hash, password)):
+                    session["logged_in"] = True
+                    session["username"] = userDB["username"]
+                    session["role"] = userDB["role"]
+                    #print("Utente che accede nome:",session["username"])
+                    #print("login corretto")
+                    return redirect(url_for('main'))
+                else:
+                    session["logged_in"] = False
+                    print("login failed")
+                    return redirect(url_for('index'))
         except Exception as e:
             print("exception error DB", str(e))
             return redirect(url_for('index'))
@@ -214,8 +258,8 @@ def modifyLabel():
     if request.is_xhr and request.method=="POST":
         idDB = request.form["id"]
         name = request.form["name"]
-        #print("modify label of Polygon with idDB",idDB)
-        #print("new label: ",name)
+        #print("modifica label del Polygon con idDB",idDB)
+        #print("nuova etichetta",name)
         try:
             managedb.modifyLabelPolygonOnIdDB(idDB,name)
             return json.dumps({"result": "correct"})
@@ -229,7 +273,7 @@ def listPointClusterOnDate():
     if request.is_xhr and request.method=="POST":
         dateold = request.form['dateStr']
         datenew = datetime.datetime(int(dateold[0:4]), int(dateold[4:6]), int(dateold[6:8]), int(dateold[9:11]))
-        #print("Check clusters' points of a specific date:", str(datenew))
+        #print("Individuare i Point Cluster con datetime", str(datenew))
         try:
             result, cursorListPointCluster = managedb.listPointClusterOnDateDB(datenew)
             if (result == False):
