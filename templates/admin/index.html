@@ -1,0 +1,15 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    {% if session.role == "ADMIN" %}
+    <h4>Welcome {{session.username}}</h4>
+    <p>In this section you'll be able to handle User DB. There are 3 most operation:</p>
+    <ul>
+        <li>to create User</li>
+        <li>to delete User</li>
+        <li>to modify User</li>
+    </ul>
+    {% else %}
+        <h4>Welcome {{session.username}}</h4>
+    {% endif %}
+    <a href="/main">Ritorna all'app</a>
+{% endblock body %}
