@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Meteo Uniparthenope</title>
+    <title>Main | Meteo Uniparthenope</title>
     <link rel="stylesheet" href="{{url_for('static',filename='css/jquery-ui.css')}}"/>
     <link rel="stylesheet" href="{{url_for('static',filename='css/jquery-ui-timepicker-addon.min.css')}}"/>
     <link rel="stylesheet" href="{{url_for('static',filename='css/meteo-uniparthenope.css')}}"/>
@@ -75,7 +75,7 @@
             opacity: 0.7;
         }
         #mapmap-container,#mapmap-container-mapid{
-            height: 500px !important;
+            height: 780px !important;
         }
         #control{
             height:78px !important;
@@ -90,16 +90,47 @@
         button.delete_on-active{
             box-shadow: inset 0 -1px 5px 2px rgba(81, 77, 77, 0.31);
         }
+        ul#myUl1{
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          margin: -8px -8px;
+          overflow: hidden;
+          background-color: #17a2b8;
+        }
+        li.myLi1{
+            float:left;
+        }
+        li.myLi1 a.myA1{
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 15px 16px;
+            text-decoration: none;
+            background-color: #39748e;
+        }
+
+        li.myLi1 a.myA1.active1:hover{
+            background-color: #62859bb3;
+        }
+        img.img1{
+            height: 44px;
+            width: auto;
+            padding-left: 13px;
+        }
     </style>
 </head>
 <body>
-<ul>
-    <li>Welcome {{session['username']}}</li>
-    {% if session.role == "ADMIN" %}
-        <li><a href="/admin">Home</a></li>
-    {% endif %}
-    <li><a href="{{url_for('logout')}}">Logout</a></li>
+
+<ul id="myUl1">
+    <li class="myLi1" style="text-align: center;color:white;border-right: 1px solid white;"><img  class="img1"src="{{url_for('static',filename='img/ccmmma_logo3_web.png')}}" alt="METEO UNIPARTHENOPE"></li>
+    <li class="myLi1" style="text-align: center;color:white;background-color:#39748e;border-right: 1px solid white;"; ><a href="/" class="myA1">{{session['username']}}</a></li>
+    <!--{% if session.role == "ADMIN" %}-->
+        <li style="" class="myLi1"><a class="myA1 active1" href="/admin">Home</a></li>
+    <!--{% endif %}-->
+    <li class="myLi1" style="float:right"><a class="active1 myA1" href="{{url_for('logout')}}">Logout</a></li>
 </ul>
+<br>
 <div id="title"></div>
 <div>
     <div id="control" style="height: 10cm"></div>
@@ -682,7 +713,7 @@ function updateMap(localPlace,localDate){
                         //console.log(classCluster);
                         for (let key in data) {
                             //console.log(data[key]);
-                            let id1 = data[key]._id;                    ;
+                            let id1 = data[key]._id;
                             delete data[key]._id;
                             //console.log(data[key]);
 
@@ -708,7 +739,7 @@ function updateMap(localPlace,localDate){
                                         pointToLayer: function (feature, latlng) {
                                             return L.circleMarker(latlng, geojsonMarkerOptions);
                                         }
-                                    }).bindPopup("<div><pre>Classe: " + data[key].properties.classCluster + "</pre></div>");
+                                    }).bindPopup("<div><pre>Cluster: " + data[key].properties.classCluster + "</pre></div>");
                                     //console.log(data[key]);
                                     classCluster[key1].clusterGroup.addLayer(a);
                                     classCluster[key1].count++;
