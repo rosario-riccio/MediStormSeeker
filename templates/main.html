@@ -125,9 +125,9 @@
 <ul id="myUl1">
     <li class="myLi1" style="text-align: center;color:white;border-right: 1px solid white;"><img  class="img1"src="{{url_for('static',filename='img/ccmmma_logo3_web.png')}}" alt="METEO UNIPARTHENOPE"></li>
     <li class="myLi1" style="text-align: center;color:white;background-color:#39748e;border-right: 1px solid white;"; ><a href="/" class="myA1">{{session['username']}}</a></li>
-    <!--{% if session.role == "ADMIN" %}-->
+    {% if data.flag == "true" %}
         <li style="" class="myLi1"><a class="myA1 active1" href="/admin">Home</a></li>
-    <!--{% endif %}-->
+    {% endif %}
     <li class="myLi1" style="float:right"><a class="active1 myA1" href="{{url_for('logout')}}">Logout</a></li>
 </ul>
 <br>
