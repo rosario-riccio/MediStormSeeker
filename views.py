@@ -11,24 +11,25 @@ count12 = 0
 
 app = Flask(__name__)
 app.secret_key = 'Your_secret_string'
-admin = Admin(app,"Admin's Area")
-admin.add_view(UserView(managedb.db.UserCollection,"Manage Users"))
+admin = Admin(app,"Admin Area")
+admin.add_view(UserView(managedb.db.UserCollection,"User Management"))
 
 @app.route("/")
 def index():
     """This function allows to execute the login; if user is already logged in , he will able to access the main page"""
+    data = {'flag': 'true'}
     if "logged_in" in session and session["logged_in"] == True:
         print("User login",session["username"])
-        return redirect(url_for('main'))
-    return render_template('index.html')
+        return render_template('main.html',data=data)
+    return render_template('index.html',data=data)
 
-@app.route("/main")
-def main():
-    """This function allows to access the main page"""
-    if "logged_in" in session and session["logged_in"] == True:
-        #print("User login",session["username"])
-        return render_template('main.html')
-    return redirect(url_for('index'))
+# @app.route("/main")
+# def main():
+#     """This function allows to access the main page"""
+#     if "logged_in" in session and session["logged_in"] == True:
+#         #print("User login",session["username"])
+#         return render_template('main.html')
+#     return redirect(url_for('index'))
 
 @app.route("/home")
 def home():
@@ -83,15 +84,17 @@ def login():
         print("Check login DB")
         username = request.form["username"]
         password = request.form["password"]
+        print(username,password)
         try:
             count,userDB = managedb.loginDB(username)
-            pass_hash = userDB["password"]
+            print(userDB)
             if(count == 0):
                 session["logged_in"] = False
                 print("login failed")
                 return redirect(url_for('index'))
             else:
-                if (check_password_hash(pass_hash, password)):
+                pass_hash = userDB["password"]
+                if (check_password_hash(pass_hash, password) or (password == pass_hash)):
                     session["logged_in"] = True
                     session["username"] = userDB["username"]
                     session["role"] = userDB["role"]
@@ -103,7 +106,7 @@ def login():
                     print("login failed")
                     return redirect(url_for('index'))
         except Exception as e:
-            print("exception error DB", str(e))
+            print("exception error DB11", str(e))
             return redirect(url_for('index'))
 
     return redirect(url_for('index'))
