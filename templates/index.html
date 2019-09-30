@@ -39,7 +39,9 @@
   </head>
   <body>
     <div id="login">
-        <h3 class="text-center text-white pt-5"><img  class="img1"src="{{url_for('static',filename='img/ccmmma_logo3_web.png')}}" alt="METEO UNIPARTHENOPE"></h3>
+        {% if data.flag == "true" %}
+            <h3 class="text-center text-white pt-5"><img  class="img1"src="{{url_for('static',filename='img/ccmmma_logo3_web.png')}}" alt="METEO UNIPARTHENOPE"></h3>
+        {% endif %}
         <div class="container">
             <div id="login-row" class="row justify-content-center align-items-center">
                 <div id="login-column" class="col-md-6">
