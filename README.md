@@ -16,3 +16,4 @@ These data are provided thanks to ajax calls in the meteo-uniparthenope library:
 you type this command "db.UserCollection.createIndex( { "username": 1 }, { unique: true } )"
 - It's necessary to insert the first admin by mongo's shell:
 for example you could type this command --> db.UserCollection.insert({"name":"YOUR_NAME","surname":"YOUR_SURNAME","username":"YOUR_USERNAME","password":"YOUR_PASSWORD","role":"ADMIN"})
+-if you wanted to remove "Uniparthenope" logo you would set flag = false in view.py in function index
