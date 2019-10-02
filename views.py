@@ -2,7 +2,6 @@
 
 from myfunction import *
 import datetime
-from flask_user import roles_required
 import os
 
 #these values allows to insert the default labels
@@ -24,14 +23,6 @@ def index():
         return render_template('main.html',data=data)
     return render_template('loginPage.html',data=data)
 
-# @app.route("/main")
-# def main():
-#     """This function allows to access the main page"""
-#     if "logged_in" in session and session["logged_in"] == True:
-#         #print("User login",session["username"])
-#         return render_template('main.html')
-#     return redirect(url_for('index'))
-
 @app.route("/home")
 def home():
     """This function allows to execute the login; if user is already logged in , he will able to access the main page"""
@@ -39,14 +30,6 @@ def home():
         print("User login",session["username"])
         return render_template('/admin/index.html')
     return redirect(url_for('index'))
-
-
-@app.route("/registration")
-def registration():
-    """This function allows to register our account"""
-    if "logged_in" in session and session["logged_in"] == True:
-        return redirect(url_for('main'))
-    return render_template('registration.html')
 
 @app.route('/createUser',methods=["GET","POST"])
 def createUser():
