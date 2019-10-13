@@ -39,6 +39,12 @@ for example you could type this command:
 - os.urandom(24)
 - quit()
 - vi views.py
+13. insert your path where there are netCDF file in myfunction.py --> localPath = "<insert your path where there are netCDF file>"
+14. install server redis; for example for Ubuntu OS:
 
-13. flask run --host 0.0.0.0  --port 5555
-14. If you wanted to remove "Uniparthenope" logo you would set flag = false in view.py in function index
+- sudo apt update
+- sudo apt install redis-server
+
+14. flask run --host 0.0.0.0  --port 5555
+15. In another terminal in same path lauch this command: celery -A app.celery worker -l info
+16. If you wanted to remove "Uniparthenope" logo you would set flag = false in view.py in function index
