@@ -27,24 +27,26 @@ you must install mongo db and execute these commands in mongo shell:
 - db.LabelCollection.createIndex( { "labelName": 1 }, { unique: true } )
 - db.PolygonCollection.createIndex({"geometry.coordinates":1,"properties.dateStr":1},{unique:true})
 
-10. It's necessary to insert the first admin by mongo's shell:
+9. It's necessary to insert the first admin by mongo's shell:
 for example you could type this command:
 
 - db.UserCollection.insert({"name":"YOUR_NAME","surname":"YOUR_SURNAME","username":"YOUR_USERNAME","password":"YOUR_PASSWORD","role":"ADMIN"})
 
-12. You must insert your secret key in views.py --> app.secret_key = 'Your_secret_string'; for example you could create your secret key using python:
+10. You must insert your secret key in views.py --> app.secret_key = 'Your_secret_string'; for example you could create your secret key using python:
 
 - python
 - import os
 - os.urandom(24)
 - quit()
 - vi views.py
-13. insert your path where there are netCDF file in myfunction.py --> localPath = "<insert your path where there are netCDF file>"
-14. install server redis; for example for Ubuntu OS:
+
+11. insert your path where there are netCDF file in myfunction.py --> localPath = "<insert your path where there are netCDF file>"
+ 
+12. install server redis; for example for Ubuntu OS:
 
 - sudo apt update
 - sudo apt install redis-server
 
-14. flask run --host 0.0.0.0  --port 5555
-15. In another terminal in same path lauch this command: celery -A app.celery worker -l info
-16. If you wanted to remove "Uniparthenope" logo you would set flag = false in view.py in function index
+13. flask run --host 0.0.0.0  --port 5555
+14. In another terminal in same path you lauch this command: celery -A app.celery worker -l info
+15. If you wanted to remove "Uniparthenope" logo you would set flag = false in view.py in function index
