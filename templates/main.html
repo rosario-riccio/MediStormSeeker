@@ -742,6 +742,10 @@ function onEachFeature(f, l) {
                             console.log("value "+ label);
                             return;
                         }
+                        if(label == ""){
+                            console.log("value "+ label);
+                            return;
+                        }
                         label = label.toUpperCase();
                         label = label.trim();
                         console.log(label);
