@@ -7,7 +7,7 @@ from netCDF4 import Dataset
 from shapely.geometry import Polygon,Point
 
 #insert your path where there are netCDF file
-localPath = "/home/rosario/Scrivania/dataTemp"
+localPath = "<insert your path where there are netCDF file>"
 #localPath = "/Users/rosarioriccio/Desktop/dataTemp"
 url = "http://193.205.230.6:8080/opendap/hyrax/opendap/wrf5"
 
