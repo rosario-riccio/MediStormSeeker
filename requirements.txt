@@ -11,7 +11,7 @@ Flask==1.1.1
 Flask-Admin==1.5.3
 importlib-metadata==0.23
 itsdangerous==1.1.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 kiwisolver==1.1.0
 kombu==4.6.5
 MarkupSafe==1.1.1
